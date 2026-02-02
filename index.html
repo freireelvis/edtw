@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de Código</title>
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    font-family: monospace;
+    background: #1e1e1e;
+    color: #fff;
+  }
+
+  .editor-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 10px;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .editor h3 {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #f0f0f0;
+  }
+
+  .editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ace_editor {
+    flex: 1;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+  .preview-container {
+    width: 50%;
+    padding: 10px;
+    background-color: #000;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+  }
+
+  @media (max-width: 900px) {
+    body {
+      flex-direction: column;
+    }
+    .editor-container, .preview-container {
+      width: 100%;
+      height: 50%;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="editor-container">
+    <div class="editor">
+      <h3>HTML</h3>
+      <div id="html-editor"></div>
+    </div>
+    <div class="editor">
+      <h3>CSS</h3>
+      <div id="css-editor"></div>
+    </div>
+    <div class="editor">
+      <h3>JavaScript</h3>
+      <div id="js-editor"></div>
+    </div>
+  </div>
+  <div class="preview-container">
+    <iframe id="preview"></iframe>
+  </div>
+
+  <!-- Ace Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.15.2/ace.js"></script>
+  <script>
+    // Inicializa editores Ace
+    function createEditor(id, mode) {
+      const editor = ace.edit(id);
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/" + mode);
+      editor.session.setTabSize(2);
+      editor.session.setUseSoftTabs(true);
+      editor.setShowPrintMargin(false);
+      editor.setOption("wrap", true);
+      return editor;
+    }
+
+    const htmlEditor = createEditor("html-editor", "html");
+    const cssEditor = createEditor("css-editor", "css");
+    const jsEditor = createEditor("js-editor", "javascript");
+
+    const preview = document.getElementById("preview");
+
+    function updatePreview() {
+      const html = htmlEditor.getValue();
+      const css = `<style>${cssEditor.getValue()}</style>`;
+      const js = `<script>${jsEditor.getValue()}<\/script>`;
+      preview.srcdoc = html + css + js;
+    }
+
+    htmlEditor.session.on('change', updatePreview);
+    cssEditor.session.on('change', updatePreview);
+    jsEditor.session.on('change', updatePreview);
+
+    // Conteúdo inicial
+    htmlEditor.setValue("<h1>Olá, mundo!</h1>");
+    cssEditor.setValue("h1 { color: #4cafef; text-align: center; }");
+    jsEditor.setValue("console.log('Editor carregado!');");
+
+    updatePreview();
+  </script>
+</body>
+</html>
